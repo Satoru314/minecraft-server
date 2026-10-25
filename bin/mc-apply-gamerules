@@ -1,0 +1,14 @@
+#!/bin/bash
+# config/gamerules.txt のゲームルールを RCON で適用する。
+# systemd の ExecStartPost から呼ばれ、RCON が応答するまで待つ。
+set -euo pipefail
+here="$(cd "$(dirname "$0")/.." && pwd)"
+
+for _ in $(seq 1 150); do
+  "$here/bin/mc-cmd" list >/dev/null 2>&1 && break
+  sleep 2
+done
+
+grep -v '^\s*\(#\|$\)' "$here/config/gamerules.txt" | while read -r rule value; do
+  "$here/bin/mc-cmd" gamerule "$rule" "$value"
+done

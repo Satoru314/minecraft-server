@@ -1,0 +1,15 @@
+# install.sh が毎回 server.properties に上書きする設定。ここにない項目はサーバーの既定値のまま。
+# rcon.password は install.sh がサーバー上で生成する（リポジトリには入れない）。
+motd=LAN Minecraft
+server-port=25565
+online-mode=false
+white-list=true
+enforce-whitelist=true
+gamemode=survival
+difficulty=easy
+max-players=10
+view-distance=8
+simulation-distance=6
+spawn-protection=0
+enable-rcon=true
+rcon.port=25575

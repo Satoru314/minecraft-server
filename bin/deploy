@@ -1,0 +1,12 @@
+#!/bin/bash
+# 手元のリポジトリをサーバーに送って install.sh を実行する。
+#   bin/deploy root@<host> [--accept-eula]
+set -euo pipefail
+target=${1:?usage: bin/deploy root@<host> [--accept-eula]}
+eula=""
+[[ "${2:-}" == --accept-eula ]] && eula="ACCEPT_EULA=yes"
+repo="$(cd "$(dirname "$0")/.." && pwd)"
+
+ssh "$target" 'command -v rsync >/dev/null || (DEBIAN_FRONTEND=noninteractive apt-get update -qq && apt-get install -y -qq rsync >/dev/null)'
+rsync -a --delete --exclude .git "$repo/" "$target:/opt/minecraft-server/"
+ssh "$target" "$eula /opt/minecraft-server/install.sh"

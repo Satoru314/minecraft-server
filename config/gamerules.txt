@@ -1,0 +1,2 @@
+# 起動後に bin/mc-apply-gamerules が RCON で適用するゲームルール（"ルール名 値"）
+keep_inventory true

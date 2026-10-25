@@ -1,0 +1,2 @@
+# /etc/default/minecraft にコピーされる。サーバー上で直接編集してよい（install.sh は既存のものを上書きしない）。
+MC_HEAP=6G

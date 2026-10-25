@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""RCON でサーバーにコマンドを送る。
+
+  mc-cmd list
+  mc-cmd "whitelist add Steve"
+
+接続先とパスワードは /srv/minecraft/server/server.properties から読む。
+"""
+import socket
+import struct
+import sys
+
+PROPS = "/srv/minecraft/server/server.properties"
+
+
+def read_props(path):
+    props = {}
+    with open(path) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                props[k] = v
+    return props
+
+
+def packet(req_id, kind, body):
+    payload = struct.pack("<ii", req_id, kind) + body.encode() + b"\x00\x00"
+    return struct.pack("<i", len(payload)) + payload
+
+
+def recv_packet(sock):
+    def recv_exact(n):
+        buf = b""
+        while len(buf) < n:
+            chunk = sock.recv(n - len(buf))
+            if not chunk:
+                raise ConnectionError("RCON connection closed")
+            buf += chunk
+        return buf
+
+    (length,) = struct.unpack("<i", recv_exact(4))
+    data = recv_exact(length)
+    req_id, kind = struct.unpack("<ii", data[:8])
+    return req_id, kind, data[8:-2].decode(errors="replace")
+
+
+def main():
+    if len(sys.argv) < 2:
+        print(__doc__.strip(), file=sys.stderr)
+        sys.exit(2)
+    props = read_props(PROPS)
+    port = int(props.get("rcon.port", "25575"))
+    password = props["rcon.password"]
+
+    with socket.create_connection(("127.0.0.1", port), timeout=10) as sock:
+        sock.sendall(packet(1, 3, password))
+        req_id, _, _ = recv_packet(sock)
+        if req_id == -1:
+            sys.exit("RCON authentication failed")
+        sock.sendall(packet(2, 2, " ".join(sys.argv[1:])))
+        _, _, body = recv_packet(sock)
+        if body:
+            print(body)
+
+
+if __name__ == "__main__":
+    main()

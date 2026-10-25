@@ -1,0 +1,6 @@
+[Unit]
+Description=Minecraft world backup
+
+[Service]
+Type=oneshot
+ExecStart=/opt/minecraft-server/bin/mc-backup

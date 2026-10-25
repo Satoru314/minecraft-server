@@ -1,0 +1,22 @@
+#!/bin/bash
+# ワールドを tar.gz でバックアップし、新しい方から KEEP 個だけ残す。
+set -euo pipefail
+here="$(cd "$(dirname "$0")/.." && pwd)"
+data=/srv/minecraft
+dest="$data/backups"
+keep="${KEEP:-7}"
+mkdir -p "$dest"
+
+running=0
+if "$here/bin/mc-cmd" list >/dev/null 2>&1; then
+  running=1
+  "$here/bin/mc-cmd" save-off >/dev/null
+  "$here/bin/mc-cmd" save-all flush >/dev/null
+  trap '"$here/bin/mc-cmd" save-on >/dev/null' EXIT
+fi
+
+out="$dest/world-$(date +%Y%m%d-%H%M%S).tar.gz"
+tar -C "$data/server" -czf "$out" $(cd "$data/server" && ls -d world* 2>/dev/null)
+echo "backup: $out (server running: $running)"
+
+ls -1t "$dest"/world-*.tar.gz | tail -n +"$((keep + 1))" | xargs -r rm --
