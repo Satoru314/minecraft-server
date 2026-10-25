@@ -2,9 +2,9 @@
 
 LAN 内で使う Minecraft Java Edition サーバー（[Paper](https://papermc.io/)）を、1コマンドで建てて運用するためのリポジトリ。
 
-- Paper **26.1.2** に固定。[ViaVersion](https://modrinth.com/plugin/viaversion) 同梱で、**26.2 / 26.3 など新しいクライアントからもそのまま接続できる**
+- Paper **1.21.4** に固定。[ViaVersion](https://modrinth.com/plugin/viaversion) 同梱で、**26.3 など新しいクライアントからもそのまま接続できる**
 - `online-mode=false`（アカウント認証なし）+ ホワイトリスト必須。**インターネットには公開しない前提**
-- 難易度イージー / サバイバル / `keep_inventory` オン
+- 難易度イージー / サバイバル / `keepInventory` オン
 - systemd で常駐、毎朝 5:00 (JST) にワールドを自動バックアップ（7世代）
 - RCON は 127.0.0.1 から `bin/mc-cmd` で操作。パスワードはサーバー上で生成し、リポジトリには入らない
 
@@ -34,7 +34,7 @@ ACCEPT_EULA=yes /opt/minecraft-server/install.sh
 ## 入り方
 
 1. サーバーでホワイトリストに名前を足す: `/opt/minecraft-server/bin/mc-cmd whitelist add <名前>`
-2. マイクラ（Java 版、26.1.2 以降ならどれでも）→ マルチプレイ → サーバーを追加 → `<サーバーのIP>`（ポート 25565）
+2. マイクラ（Java 版、1.21.4 以降ならどれでも）→ マルチプレイ → サーバーを追加 → `<サーバーのIP>`（ポート 25565）
 
 ## ドキュメント
 
